@@ -18,6 +18,9 @@ public class Report {
     private String performer;
     private String activity;
 
+    public Report() {
+    }
+
     public Long getId() {
         return id;
     }
