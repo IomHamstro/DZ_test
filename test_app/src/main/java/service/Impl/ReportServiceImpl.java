@@ -5,6 +5,7 @@ import model.ReportSpecs;
 import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specifications;
+import org.springframework.stereotype.Service;
 import repository.ReportRepository;
 import service.ReportService;
 
@@ -15,6 +16,8 @@ import java.util.List;
 /**
  * Created by otelezhnikova on 18.06.2015.
  */
+
+@Service
 public class ReportServiceImpl implements ReportService {
 
     @Autowired
@@ -22,7 +25,7 @@ public class ReportServiceImpl implements ReportService {
 
 
     public List<String> getAllPerformers() {
-        return null;
+        return reportRepository.findAllPerformers();
     }
 
     public List<Report> getAllReports(Date startDate, Date endDate, String performers) {
