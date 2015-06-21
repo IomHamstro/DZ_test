@@ -12,7 +12,15 @@ import java.util.List;
 
 public final class ReportSpecs {
 
-    public static Specification<Report> checkParams(final Date startDate, final Date endDate, final String performers) {
+    /**
+     *   This method is used for setting params to query
+     *
+     *   @param startDate the Date that selected as starting
+     *   @param endDate the Date that selected as ending
+     *   @param performer the param, that select as performer
+     *   @return an Specification with query criteria parameters
+     */
+    public static Specification<Report> checkParams(final Date startDate, final Date endDate, final String performer) {
         return new Specification<Report>() {
 
             List<Predicate> predicates = new ArrayList<Predicate>();
@@ -25,8 +33,8 @@ public final class ReportSpecs {
                 if(endDate != null) {
                     predicates.add(cb.lessThanOrEqualTo(root.<Date>get("endDate"), endDate));
                 }
-                if(performers != null && !performers.isEmpty())
-                    predicates.add(cb.like(root.<String>get("performer"), performers));
+                if(performer != null && !performer.isEmpty())
+                    predicates.add(cb.like(root.<String>get("performer"), performer));
 
 
                return cb.and( predicates.toArray(new Predicate[predicates.size()]));

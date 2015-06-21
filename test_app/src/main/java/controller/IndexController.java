@@ -1,28 +1,27 @@
 package controller;
 
+import controller.util.DateUtil;
 import model.Report;
 import org.springframework.web.bind.annotation.*;
 import service.ReportService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.servlet.ModelAndView;
+import viewobject.ReportVO;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Controller
 public class IndexController {
-    private static final Logger logger = LoggerFactory.getLogger(IndexController.class);
+
 
     @Autowired
     ReportService reportService;
 
     @ModelAttribute("report")
-    public Report getReportObject() {
-        return new Report();
+    public ReportVO getReportObject() {
+        return new ReportVO();
     }
 
     @ModelAttribute("performers")
@@ -33,36 +32,42 @@ public class IndexController {
     }
 
     @ModelAttribute("timePeriod")
-    public HashMap<Integer,String> getTimePeriod() {
-      return timePeriod();
+    public HashMap<Integer, String> getTimePeriod() {
+        return DateUtil.timePeriod();
     }
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
-    public String index(Map<String, Object> model){
-        model.put("reports", new Report());
+    public String index() {
         return "index";
     }
 
     @RequestMapping(value = "/", method = RequestMethod.POST)
-    public ModelAndView getReports(Report report){
+    public ModelAndView getReports(@RequestParam(value = "startDate", required = false) String startDate,
+                                   @RequestParam(value = "endDate", required = false) String endDate,
+                                   @RequestParam(value = "performer", required = false) String performer,
+                                   @RequestParam(value = "timePeriod", required = false) String period) {
+
         ModelAndView mv = new ModelAndView("index");
-        mv.addObject("reports",
-                reportService.getAllReports(report.getStartDate(),
-                        report.getEndDate(), report.getPerformer()));
+
+        //  get Date objects according to the period
+        DateUtil.Range range = DateUtil.getDates(startDate, endDate, period);
+
+        // check dates for correctness
+        if(DateUtil.standardDate().equals(range.getStartDate()) || DateUtil.standardDate().equals(range.getEndDate())){
+            mv.addObject("error","Проверьте правильность написания дат");
+        }
+        else {
+            List<Report> reports = reportService.getAllReports(range.getStartDate(),range.getEndDate(),performer);
+            if(reports != null && !reports.isEmpty()){
+                mv.addObject("reports", reports);
+            }
+            else {
+                mv.addObject("error", "По данном запросу записей не найдено");
+            }
+        }
+
         return mv;
     }
 
-    private static HashMap<Integer,String> timePeriod(){
-        HashMap<Integer,String> periods = new HashMap<Integer,String>();
-        periods.put(0,"");
-        periods.put(1,"LastQtr");
-        periods.put(2,"Last Month");
-        periods.put(3,"Last Calendar Year");
-        periods.put(4,"Current Year to Date");
-        periods.put(5,"Current Qtr to Date");
-        periods.put(6,"Current Month to Date");
 
-
-        return periods;
-    }
 }

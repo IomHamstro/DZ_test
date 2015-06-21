@@ -5,48 +5,70 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>HH</title>
     <link href="/resources/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="/resources/css/index.css" rel="stylesheet"/>
+    <script src="/resources/js/jquery-2.1.4.min.js" rel="stylesheet"></script>
+    <script src="/resources/js/bootstrap.js" rel="stylesheet"></script>
+
 </head>
 <body>
 <div class="container">
-    <form class="form-horizontal" th:action="@{/}" th:object="${report}" method="post">
+    <form class="form-horizontal form" th:action="@{/}" th:object="${report}" method="post" id="form">
+        <div class="head">Поиск отчетов</div>
         <div class="form-group">
             <label for="startDate">Start date</label>
-            <input th:field="*{startDate}" type="text" class="form-control" id="startDate" />
+            <input th:field="*{startDate}" type="text" class="form-control" id="startDate"/>
         </div>
         <div class="form-group">
             <label for="endDate">End date</label>
-            <input  th:field="*{endDate}" type="text" class="form-control" id="endDate" />
+            <input th:field="*{endDate}" type="text" class="form-control" id="endDate"/>
         </div>
         <div class="form-group">
-            <select th:field="*{performer}" class="form-control">
+            <label for="performer">Performer</label>
+            <select th:field="*{performer}" class="form-control" id="performer">
                 <option th:value="null">All Performers</option>
                 <option th:each="performer : ${performers}"
                         th:value="${performer}"
-                        th:text="${performer}">Bob</option>
+                        th:text="${performer}">
+                </option>
             </select>
         </div>
         <div class="form-group">
-            <select th:value="${timePeriod}" class="form-control">
+            <label for="timePeriod">Time period</label>
+            <select th:field="*{timePeriod}" class="form-control" id="timePeriod">
                 <option th:each="timePeriod : ${timePeriod}"
-                        th:value="${timePeriod.value}"
-                        th:text="${timePeriod.value}">Bob</option>
+                        th:value="${timePeriod.key}"
+                        th:text="${timePeriod.value}">
+                </option>
             </select>
         </div>
 
-        <button type="submit" class="btn btn-default">Submit</button>
+        <button type="submit" class="btn btn-default" id="btn">Submit</button>
     </form>
 
-    <div class="row">
-        <div class="col-lg-12">
-            <ul class="list-unstyled">
-                <li th:each="rep : ${reports}">
-                    <div class="col-xs-3"><small th:text="${rep.startDate}">2015</small></div>
-                    <div class="col-xs-3"><small th:text="${rep.endDate}">2015</small></div>
-                    <div class="col-xs-3"><small th:text="${rep.performer}">Bob</small></div>
-                </li>
-            </ul>
-        </div>
+    <div  class="alert alert-danger" th:if="${error != null}">
+        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+        <strong  th:text="${error}"></strong>
     </div>
+
+    <table class="table table-bordered table-condensed col-md-offset-1 customTable" th:if="${not #lists.isEmpty(reports)}">
+        <thead>
+        <tr>
+            <th>Performer</th>
+            <th>Start date</th>
+            <th>End date</th>
+            <th>Activity</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="rep : ${reports}">
+            <td th:text="${rep.performer}"></td>
+            <td th:text="${rep.startDate} ? ${#calendars.format(rep.startDate, 'dd MMM yyyy')}"></td>
+            <td th:text="${rep.endDate} ? ${#calendars.format(rep.endDate, 'dd MMM yyyy')}"></td>
+            <td th:text="${rep.activity}"></td>
+        </tr>
+        </tbody>
+
+    </table>
 </div>
 </body>
 </html>
