@@ -9,6 +9,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import repository.ReportRepository;
 
 import java.sql.SQLException;
+import java.util.List;
 
 import static fixture.TestData.standardReport;
 import static org.junit.Assert.*;
@@ -44,6 +45,14 @@ public class ReportRepositoryTest {
         assertEquals(reportRepository.findOne(report.getId()).getPerformer(), "Mary");
         reportRepository.delete(report);
         assertNull(reportRepository.findOne(report.getId()));
+    }
+
+    @Test
+    public void testFindAllPerformers() throws SQLException {
+        Report newReport = standardReport();
+        reportRepository.save(newReport);
+        List<String> performers = reportRepository.findAllPerformers();
+        assertNotNull(performers);
     }
 
 }
